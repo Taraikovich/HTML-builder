@@ -9,14 +9,22 @@ fs.readdir(secretFolderPath, { withFileTypes: true }, (err, files) => {
     return;
   }
 
-  files.forEach(file => {
+  files.forEach((file) => {
     if (file.isFile()) {
-      const fileName = path.parse(file.name).name;
-      const fileExtension = path.parse(file.name).ext.replace('.', '');
-      const fileStats = fs.statSync(path.join(secretFolderPath, file.name));
-      const fileSizeInBytes = fileStats.size;
-      const fileSizeInKilobytes = fileSizeInBytes / 1000;
-      console.log(`${fileName}-${fileExtension}-${fileSizeInKilobytes.toFixed(3)}kb`);
-    }
+      const filePath = path.join(secretFolderPath, file.name);
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          console.error(err);
+          return;
+        };
+        const fileName = path.parse(file.name).name;
+        const fileExtension = path.parse(file.name).ext.replace('.', '');
+        const fileSizeInBytes = stats.size;
+        const fileSizeInKilobytes = fileSizeInBytes / 1000;
+        console.log(
+          `${fileName}-${fileExtension}-${fileSizeInKilobytes.toFixed(3)}kb`
+        );
+      });
+    };
   });
 });
